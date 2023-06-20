@@ -3,24 +3,35 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="../main.css" type="text/css"/>
     <link rel="stylesheet" href="cgpa.css" type="text/css"/>
-    <title>CEG DoM R2019 CGPA Calculator</title>
+    <title>R2019 CGPA</title>
     <link rel="stylesheet" href="https://pyscript.net/releases/2022.12.1/pyscript.css" />
     <script defer src="https://pyscript.net/releases/2022.12.1/pyscript.js"></script>
   </head>
   <body>
+	  <header>
+		  <h1><a href="../index.html">The Project Abyss</a></h1>
+	  </header>
+	  <nav>
+		  <div>
+		  <a class="active" href="./cgpa.html"> CEGDOM R2019 CGPA Calculator</a>
+		  </div>
+	  </nav>
 <py-script>
+	from js import document, window
+	from pyodide import create_proxy
+	import datetime
 
-
-	def calculate_cgpa(gpa):
+	def calculate_cgpa():
 		total_credits = [10]*10
 		numerator,denominator = 0,0
 		for i in range(1,len(gpa)):
 			if gpa[i] != 0:
 				numerator += gpa[i]
 				denominator +=total_credits[i]
-    if denominator == 0:
-      return 0
+		if denominator == 0:
+			return 0
 		cgpa = (numerator/denominator)*10
 		return cgpa
 
@@ -117,9 +128,176 @@
         'XM5892':{'Title': 'Professional Photography', 'Credits': '3', 'Semester': '8' }
         }
 
+	def open_sem(self):
+		try:
+			sem=self.id[5]
+		except:
+			sem=self.currentTarget.id[5]
+
+		tab = document.getElementsByClassName("tab")
+		for i in tab:
+			i.style.display = "none"
+
+		tabuttons = document.getElementsByClassName("tabuttons")
+		for i in tabuttons:
+			i.className = i.className.replace(" active", "")
+		document.getElementById('div'+str(sem)).style.display = "block"
+
+		try:
+			self.currentTarget.className += " active"
+		except:
+			self.className += " active"
+	
+
+	def add_grades(select):
+		str= ["choose grade", "O", "A+", "A", "B+", "B", "RA"]
+		for i in str:
+			option = document.createElement("option")
+			if i == 0: 
+				option.setAttribute("disabled", disabled)
+				option.setAttribute("selected", selected)
+			option.setAttribute("value", i)
+			text = document.createTextNode(i)
+			option.appendChild(text)
+			select.appendChild(option)
+
+		return select
+		
+
+	def create_sem_table(sem):
+		div=document.createElement('DIV')
+		div.setAttribute('class','tab')
+		div.setAttribute('id','div'+str(sem))
+
+		sub = document.createElement("BUTTON")
+		sub.appendChild(document.createTextNode("Calculate GPA"))
+		sub.setAttribute('id', 'button'+str(sem))
+		sub.setAttribute('class', 'calcButton')
+		sub.addEventListener("click", gpa_proxy)
+
+		result=document.createElement("input")
+		result.setAttribute("type","number")
+		result.setAttribute("disabled","disabled")
+		result.setAttribute("class","gpa")
+		result.setAttribute("id","gpa"+str(sem))
+
+		div.appendChild(result)
+		div.appendChild(sub)
+
+
+		tb=document.createElement('table')
+		tb.setAttribute('id','sem'+str(sem))
+
+		tr = tb.insertRow()
+		title = document.createElement('th')
+		title.appendChild(document.createTextNode("Title"))
+		tr.appendChild(title)
+
+		code = document.createElement('th')
+		code.appendChild(document.createTextNode("Code"))
+		tr.appendChild(code)
+
+		credits = document.createElement('th')
+		credits.appendChild(document.createTextNode("Credits"))
+		tr.appendChild(credits)
+
+		title = document.createElement('th')
+		title.appendChild(document.createTextNode("Grade"))
+		tr.appendChild(title)
+
+		courses=get_courses(sem)
+		for i in courses:
+			tr = tb.insertRow()
+			title = tr.insertCell()
+			title.appendChild(document.createTextNode(data[i].get('Title')))
+
+			code = tr.insertCell()
+			code.appendChild(document.createTextNode(i))
+
+			cred = tr.insertCell()
+			cred.appendChild(document.createTextNode(data[i].get('Credits')))
+
+			select = document.createElement('select')
+			select = add_grades(select)
+
+			td_in=tr.insertCell()
+			td_in.appendChild(select)
+
+		div.appendChild(tb)
+
+		main.appendChild(div)
+
+	def get_gpa(self):
+		sem_no=self.currentTarget.id[6]
+		table = document.getElementById('sem'+sem_no)
+		grades = []
+		codes = []
+		for i in range(1, table.rows.length):
+			codes.append(table.rows[i].cells[1].innerHTML)
+			grade = table.rows[i].cells[3].children[0].value
+			if grade == 'choose grade':
+				window.alert('Select a valid grade')
+				return
+			grades.append(grade)
+		gpa[int(sem_no)] = calculate_gpa(grades_to_points(grades), codes)
+		result = document.getElementById("gpa"+sem_no)
+		result.value = round(gpa[int(sem_no)] , 2)
+	
+	def get_cgpa(self):
+		cgpa = calculate_cgpa()
+		if cgpa == 0:
+			window.alert("Calculate atleast one gpa first")
+		cgpa_res = document.getElementById("cgpa")
+		cgpa_res.value = round(cgpa, 2)
+
+	till = 8
+	body = document.body
+	global gpa 
+	gpa = [0]*till
+	tab_proxy = create_proxy(open_sem)
+	cgpa_proxy = create_proxy(get_cgpa)
+	gpa_proxy = create_proxy(get_gpa)
+
+	main = document.createElement('main')
+	div = document.createElement('DIV')
+	div.setAttribute('class','header')
+	for i in range(1, till):
+		tabut = document.createElement("BUTTON")
+		tabut.setAttribute('class', 'tabuttons')
+		tabut.setAttribute('id', 'tabut'+str(i))
+		tabut.addEventListener("click", tab_proxy)
+		tabut.appendChild(document.createTextNode("Semester "+str(i)))
+		div.appendChild(tabut)
+
+	main.appendChild(div)
+
+	for i in range(1, till):
+		create_sem_table(i)
+
+	divlas = document.createElement('div')
+	divlas.setAttribute("class", "lastdiv")
+	cgpa = document.createElement("BUTTON")
+	cgpa.appendChild(document.createTextNode("Calculate CGPA"))
+	cgpa.setAttribute('id', 'cgpabutton')
+	cgpa.addEventListener("click", cgpa_proxy)
+
+	cgpa_res=document.createElement("input")
+	cgpa_res.setAttribute("type","number")
+	cgpa_res.setAttribute("disabled","disabled")
+	cgpa_res.setAttribute("id","cgpa")
+	cgpa_res.setAttribute("class","gpa")
+
+	divlas.appendChild(cgpa_res)
+	divlas.appendChild(cgpa)
+
+	main.appendChild(divlas)
+	body.appendChild(main)
+	footer = document.createElement("footer")
+	footer.appendChild(document.createTextNode(str(datetime.date.today().strftime("%Y"))))
+	body.appendChild(footer)
+	
+	open_sem(document.getElementsByClassName("tabuttons")[0])
+
 </py-script>	
-
-
-	  
   </body>
 </html>
