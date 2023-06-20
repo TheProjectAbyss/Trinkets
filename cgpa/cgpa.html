@@ -24,25 +24,27 @@
 	import datetime
 
 	def calculate_cgpa():
-		total_credits = [10]*10
-		numerator,denominator = 0,0
-		for i in range(1,len(gpa)):
-			if gpa[i] != 0:
-				numerator += gpa[i]
+		total_credits = [0, 22, 23, 23, 24, 23, 21, 16, 23, 24, 18]
+		numerator, denominator = 0,0
+		for i in range(1,len(grade_credits)):
+			if grade_credits[i] != 0:
+				numerator += grade_credits[i]
 				denominator +=total_credits[i]
 		if denominator == 0:
 			return 0
-		cgpa = (numerator/denominator)*10
+		cgpa = (numerator/denominator)
 		return cgpa
 
 	def calculate_gpa(grades,codes):
 		credits = [0]*len(grades)
+		sem_no = int(data[codes[0]].get('Semester'))
 		for i in range(len(codes)):
 			credits[i] = int(data[codes[i]].get('Credits'))
-		gpa = 0
+		grade_credits[sem_no] = 0
 		for i in range(len(grades)):
-			gpa += grades[i]*credits[i]
-		return (gpa/sum(credits))
+			grade_credits[sem_no] += grades[i]*credits[i]
+		gpa = grade_credits[sem_no]/sum(credits)
+		return gpa
 			
 	def grades_to_points(grades):
 		points = {
@@ -130,9 +132,9 @@
 
 	def open_sem(self):
 		try:
-			sem=self.id[5]
+			sem=self.id[5:]
 		except:
-			sem=self.currentTarget.id[5]
+			sem=self.currentTarget.id[5:]
 
 		tab = document.getElementsByClassName("tab")
 		for i in tab:
@@ -230,7 +232,7 @@
 		main.appendChild(div)
 
 	def get_gpa(self):
-		sem_no=self.currentTarget.id[6]
+		sem_no=self.currentTarget.id[6:]
 		table = document.getElementById('sem'+sem_no)
 		grades = []
 		codes = []
@@ -241,10 +243,10 @@
 				window.alert('Select a valid grade')
 				return
 			grades.append(grade)
-		gpa[int(sem_no)] = calculate_gpa(grades_to_points(grades), codes)
+		gpa = calculate_gpa(grades_to_points(grades), codes)
 		result = document.getElementById("gpa"+sem_no)
 		result.setAttribute('title','rounded off to five decimal points only for display')
-		result.value = round(gpa[int(sem_no)] , 5)
+		result.value = round(gpa , 5)
 	
 	def get_cgpa(self):
 		cgpa = calculate_cgpa()
@@ -255,8 +257,8 @@
 
 	till = 11
 	body = document.body
-	global gpa 
-	gpa = [0]*till
+	global grade_credits
+	grade_credits = [0]*till
 	tab_proxy = create_proxy(open_sem)
 	cgpa_proxy = create_proxy(get_cgpa)
 	gpa_proxy = create_proxy(get_gpa)
