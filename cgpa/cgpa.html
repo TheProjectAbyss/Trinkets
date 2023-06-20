@@ -183,8 +183,6 @@
 		result.setAttribute("class","gpa")
 		result.setAttribute("id","gpa"+str(sem))
 
-		div.appendChild(result)
-		div.appendChild(sub)
 
 
 		tb=document.createElement('table')
@@ -226,6 +224,8 @@
 			td_in.appendChild(select)
 
 		div.appendChild(tb)
+		div.appendChild(result)
+		div.appendChild(sub)
 
 		main.appendChild(div)
 
@@ -243,14 +243,15 @@
 			grades.append(grade)
 		gpa[int(sem_no)] = calculate_gpa(grades_to_points(grades), codes)
 		result = document.getElementById("gpa"+sem_no)
-		result.value = round(gpa[int(sem_no)] , 2)
+		result.setAttribute('title','rounded off to five decimal points only for display')
+		result.value = round(gpa[int(sem_no)] , 5)
 	
 	def get_cgpa(self):
 		cgpa = calculate_cgpa()
 		if cgpa == 0:
 			window.alert("Calculate atleast one gpa first")
 		cgpa_res = document.getElementById("cgpa")
-		cgpa_res.value = round(cgpa, 2)
+		cgpa_res.value = round(cgpa, 5)
 
 	till = 11
 	body = document.body
@@ -287,6 +288,7 @@
 	cgpa_res.setAttribute("type","number")
 	cgpa_res.setAttribute("disabled","disabled")
 	cgpa_res.setAttribute("id","cgpa")
+	cgpa_res.setAttribute('title', 'rounded off to 5 decimal points once for display')
 	cgpa_res.setAttribute("class","gpa")
 
 	divlas.appendChild(cgpa_res)
@@ -301,7 +303,7 @@
 	body.appendChild(footer)
 	
 	open_sem(document.getElementsByClassName("tabuttons")[0])
-	window.alert("CGPA will be calculated only for the GPA values calculated already")
+	window.alert("CGPA can only be calculated after atleast GPA for one semester has been calculated")
 </py-script>	
   </body>
 </html>
