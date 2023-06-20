@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="../main.css" type="text/css"/>
+    <link rel="stylesheet" href="cgpa.css" type="text/css"/>
+    <title>R2019 CGPA</title>
+    <link rel="stylesheet" href="https://pyscript.net/releases/2022.12.1/pyscript.css" />
+    <script defer src="https://pyscript.net/releases/2022.12.1/pyscript.js"></script>
+  </head>
+  <body>
+	  <header>
+		  <h1><a href="../index.html">The Project Abyss' Trinkets</a></h1>
+	  </header>
+	  <nav>
+		  <div>
+		  <a class="active" href="./cgpa.html"> CEGDOM R2019 CGPA Calculator</a>
+		  </div>
+	  </nav>
+<py-script>
+	from js import document, window
+	from pyodide import create_proxy
+	import datetime
+
+	def calculate_cgpa():
+		total_credits = [10]*10
+		numerator,denominator = 0,0
+		for i in range(1,len(gpa)):
+			if gpa[i] != 0:
+				numerator += gpa[i]
+				denominator +=total_credits[i]
+		if denominator == 0:
+			return 0
+		cgpa = (numerator/denominator)*10
+		return cgpa
+
+	def calculate_gpa(grades,codes):
+		credits = [0]*len(grades)
+		for i in range(len(codes)):
+			credits[i] = int(data[codes[i]].get('Credits'))
+		gpa = 0
+		for i in range(len(grades)):
+			gpa += grades[i]*credits[i]
+		return (gpa/sum(credits))
+			
+	def grades_to_points(grades):
+		points = {
+		'O':10,
+		'A+':9,
+		'A':8,
+		'B+':7,
+		'B':6,
+		'RA':0
+	 }
+		grade_points = [0]*len(grades)
+		for i in range(len(grades)):
+			grade_points[i] = points[grades[i]]
+		return grade_points
+
+	def get_courses(semester):
+		courses = []
+		for i in data:
+			if data[i].get('Semester') == str(semester):
+				courses.append(i)
+		return courses
+
+	data = {
+        'XT5711/XC5711' :{'Title': 'Industrial Project', 'Credits': '16', 'Semester': '7' },
+        'XT5811/XC5811' :{'Title': 'Creative and Innovative Project', 'Credits': '2', 'Semester': '8' },
+        'XT5011/XC5011' :{'Title': 'Project Work', 'Credits': '18', 'Semester': '10' },
+        'HS5152' :{'Title': 'Communicative English', 'Credits': '3', 'Semester': '1' },
+        'MA5151' :{'Title': 'Calculus', 'Credits': '4', 'Semester': '1' },
+        'PH5152' :{'Title': 'Applied Physics', 'Credits': '4', 'Semester': '1' },
+        'HS5161' :{'Title': 'Communication Skill Laboratory', 'Credits': '2', 'Semester': '1' },
+        'CY5253' :{'Title': 'Chemistry of Materials', 'Credits': '4', 'Semester': '2' },
+        'HS5252' :{'Title': 'Technical Communication', 'Credits': '3', 'Semester': '2' },
+        'MA5251' :{'Title': 'Transform Techniques and Partial Differential Equations', 'Credits': '4', 'Semester': '2' },
+        'XT5074' :{'Title': 'Open Source Systems', 'Credits': '3', 'Semester': '5' },
+        'XC5072' :{'Title': 'Unix Internals', 'Credits': '3', 'Semester': '5' },
+        'XT5078' :{'Title': 'Visualization Techniques', 'Credits': '3', 'Semester': '6' },
+        'XT5083' :{'Title': 'Information Retrieval Techniques', 'Credits': '3', 'Semester': '8' },
+        'E-1' :{'Title': 'Elective-2', 'Credits': '3', 'Semester': '9' },
+        'E-2' :{'Title': 'Elective-2', 'Credits': '3', 'Semester': '9' },
+        'OE-2' :{'Title': 'Open Elective', 'Credits': '3', 'Semester': '9' },
+        'XC5151' :{'Title': 'Digital Systems', 'Credits': '4', 'Semester': '1' },
+        'XC5152' :{'Title': 'Problem Solving and C Programming', 'Credits': '3', 'Semester': '1' },
+        'XC5161' :{'Title': 'C Programming Laboratory', 'Credits': '2', 'Semester': '1' },
+        'XC5251' :{'Title': 'Object Oriented Programming in C++', 'Credits': '4', 'Semester': '2' },
+        'XC5252' :{'Title': 'Data Structures', 'Credits': '3', 'Semester': '2' },
+        'XC5253' :{'Title': 'Computer Architecture', 'Credits': '3', 'Semester': '2' },
+        'XC5261' :{'Title': 'Data Structures Laboratory', 'Credits': '2', 'Semester': '2' },
+        'MA5351' :{'Title': 'Logic and Abstract Algebra', 'Credits': '4', 'Semester': '3' },
+        'XC5351' :{'Title': 'Combinatorics and Graph Theory', 'Credits': '4', 'Semester': '3' },
+        'XC5352' :{'Title': 'Microprocessor and Applications', 'Credits': '4', 'Semester': '3' },
+        'XC5353' :{'Title': 'Operating Systems', 'Credits': '3', 'Semester': '3' },
+        'XC5354' :{'Title': 'Signals and Systems', 'Credits': '4', 'Semester': '3' },
+        'XC5361' :{'Title': 'Operating Systems Laboratory', 'Credits': '2', 'Semester': '3' },
+        'XC5362' :{'Title': 'Python Programming Laboratory', 'Credits': '2', 'Semester': '3' },
+        'MA5451' :{'Title': 'Probability and Statistics', 'Credits': '4', 'Semester': '4' },
+        'XC5451' :{'Title': 'Theory of Computation', 'Credits': '4', 'Semester': '4' },
+        'XC5452' :{'Title': 'Database Management Systems', 'Credits': '3', 'Semester': '4' },
+        'XC5453' :{'Title': 'Java and Internet Programming', 'Credits': '3', 'Semester': '4' },
+        'XC5454' :{'Title': 'Computer Networks', 'Credits': '4', 'Semester': '4' },
+        'XC5461' :{'Title': 'Java and Internet Programming Laboratory', 'Credits': '2', 'Semester': '4' },
+        'XC5462' :{'Title': 'Database Management Systems Laboratory', 'Credits': '2', 'Semester': '4' },
+        'XC5463' :{'Title': 'Computational Laboratory using R', 'Credits': '2', 'Semester': '4' },
+        'XT5501/XC5501' :{'Title': 'Advanced Database Management Systems/Cryptography and Data Security', 'Credits': '4', 'Semester': '5' },
+        'XC5551' :{'Title': 'Software Engineering', 'Credits': '3', 'Semester': '5' },
+        'XT5551' :{'Title': 'Data Warehousing and Mining', 'Credits': '4', 'Semester': '5' },
+        'XC5552' :{'Title': 'Design and Analysis of Algorithms', 'Credits': '4', 'Semester': '5' },
+        'XC5561' :{'Title': 'Software Development Laboratory', 'Credits': '2', 'Semester': '5' },
+        'XC5651' :{'Title': 'Operations Research', 'Credits': '4', 'Semester': '6' },
+        'XT5651' :{'Title': 'Web Technology', 'Credits': '3', 'Semester': '6' },
+        'XC5652' :{'Title': 'Artificial Intelligence', 'Credits': '4', 'Semester': '6' },
+        'MA5851' :{'Title': 'Advanced Statistical Methods for Computing', 'Credits': '4', 'Semester': '8' },
+        'XT5851' :{'Title': 'Big Data Analytics', 'Credits': '4', 'Semester': '8' },
+        'XT5852' :{'Title': 'Distributed and Cloud Computing', 'Credits': '4', 'Semester': '8' },
+        'GE5851' :{'Title': 'Environmental Science and Engineering', 'Credits': '3', 'Semester': '8' },
+        'MA5951' :{'Title': 'Numerical Methods', 'Credits': '4', 'Semester': '9' },
+        'XT5951' :{'Title': 'Internet Of Things', 'Credits': '3', 'Semester': '9' },
+        'XC5951' :{'Title': 'Advanced Machine Learning Techniques', 'Credits': '4', 'Semester': '9' },
+        'MA5961' :{'Title': 'Numerical Methods Laboratory', 'Credits': '2', 'Semester': '9' },
+        'XT5961' :{'Title': 'Internet Of Things Laboratory', 'Credits': '2', 'Semester': '9' },
+        'XC5601/XT5601' :{'Title': 'Principles of Compiler Design/Computer Graphics and Multimedia', 'Credits': '3', 'Semester': '6' },
+        'XC5611/XT5611' :{'Title': 'Compiler Design Laboratory/Computer Graphics and Multimedia Laboratory', 'Credits': '2', 'Semester': '6' },
+        'XC5612/XT5612' :{'Title': 'Mini project', 'Credits': '2', 'Semester': '6' },
+        'XM5892':{'Title': 'Professional Photography', 'Credits': '3', 'Semester': '8' }
+        }
+
+	def open_sem(self):
+		try:
+			sem=self.id[5]
+		except:
+			sem=self.currentTarget.id[5]
+
+		tab = document.getElementsByClassName("tab")
+		for i in tab:
+			i.style.display = "none"
+
+		tabuttons = document.getElementsByClassName("tabuttons")
+		for i in tabuttons:
+			i.className = i.className.replace(" active", "")
+		document.getElementById('div'+str(sem)).style.display = "block"
+
+		try:
+			self.currentTarget.className += " active"
+		except:
+			self.className += " active"
+	
+
+	def add_grades(select):
+		str= ["choose grade", "O", "A+", "A", "B+", "B", "RA"]
+		for i in str:
+			option = document.createElement("option")
+			if i == 0: 
+				option.setAttribute("disabled", disabled)
+				option.setAttribute("selected", selected)
+			option.setAttribute("value", i)
+			text = document.createTextNode(i)
+			option.appendChild(text)
+			select.appendChild(option)
+
+		return select
+		
+
+	def create_sem_table(sem):
+		div=document.createElement('DIV')
+		div.setAttribute('class','tab')
+		div.setAttribute('id','div'+str(sem))
+
+		sub = document.createElement("BUTTON")
+		sub.appendChild(document.createTextNode("Calculate GPA"))
+		sub.setAttribute('id', 'button'+str(sem))
+		sub.setAttribute('class', 'calcButton')
+		sub.addEventListener("click", gpa_proxy)
+
+		result=document.createElement("input")
+		result.setAttribute("type","number")
+		result.setAttribute("disabled","disabled")
+		result.setAttribute("class","gpa")
+		result.setAttribute("id","gpa"+str(sem))
+
+		div.appendChild(result)
+		div.appendChild(sub)
+
+
+		tb=document.createElement('table')
+		tb.setAttribute('id','sem'+str(sem))
+
+		tr = tb.insertRow()
+		title = document.createElement('th')
+		title.appendChild(document.createTextNode("Title"))
+		tr.appendChild(title)
+
+		code = document.createElement('th')
+		code.appendChild(document.createTextNode("Code"))
+		tr.appendChild(code)
+
+		credits = document.createElement('th')
+		credits.appendChild(document.createTextNode("Credits"))
+		tr.appendChild(credits)
+
+		title = document.createElement('th')
+		title.appendChild(document.createTextNode("Grade"))
+		tr.appendChild(title)
+
+		courses=get_courses(sem)
+		for i in courses:
+			tr = tb.insertRow()
+			title = tr.insertCell()
+			title.appendChild(document.createTextNode(data[i].get('Title')))
+
+			code = tr.insertCell()
+			code.appendChild(document.createTextNode(i))
+
+			cred = tr.insertCell()
+			cred.appendChild(document.createTextNode(data[i].get('Credits')))
+
+			select = document.createElement('select')
+			select = add_grades(select)
+
+			td_in=tr.insertCell()
+			td_in.appendChild(select)
+
+		div.appendChild(tb)
+
+		main.appendChild(div)
+
+	def get_gpa(self):
+		sem_no=self.currentTarget.id[6]
+		table = document.getElementById('sem'+sem_no)
+		grades = []
+		codes = []
+		for i in range(1, table.rows.length):
+			codes.append(table.rows[i].cells[1].innerHTML)
+			grade = table.rows[i].cells[3].children[0].value
+			if grade == 'choose grade':
+				window.alert('Select a valid grade')
+				return
+			grades.append(grade)
+		gpa[int(sem_no)] = calculate_gpa(grades_to_points(grades), codes)
+		result = document.getElementById("gpa"+sem_no)
+		result.value = round(gpa[int(sem_no)] , 2)
+	
+	def get_cgpa(self):
+		cgpa = calculate_cgpa()
+		if cgpa == 0:
+			window.alert("Calculate atleast one gpa first")
+		cgpa_res = document.getElementById("cgpa")
+		cgpa_res.value = round(cgpa, 2)
+
+	till = 8
+	body = document.body
+	global gpa 
+	gpa = [0]*till
+	tab_proxy = create_proxy(open_sem)
+	cgpa_proxy = create_proxy(get_cgpa)
+	gpa_proxy = create_proxy(get_gpa)
+
+	main = document.createElement('main')
+	div = document.createElement('DIV')
+	div.setAttribute('class','header')
+	for i in range(1, till):
+		tabut = document.createElement("BUTTON")
+		tabut.setAttribute('class', 'tabuttons')
+		tabut.setAttribute('id', 'tabut'+str(i))
+		tabut.addEventListener("click", tab_proxy)
+		tabut.appendChild(document.createTextNode("Semester "+str(i)))
+		div.appendChild(tabut)
+
+	main.appendChild(div)
+
+	for i in range(1, till):
+		create_sem_table(i)
+
+	divlas = document.createElement('div')
+	divlas.setAttribute("class", "lastdiv")
+	cgpa = document.createElement("BUTTON")
+	cgpa.appendChild(document.createTextNode("Calculate CGPA"))
+	cgpa.setAttribute('id', 'cgpabutton')
+	cgpa.addEventListener("click", cgpa_proxy)
+
+	cgpa_res=document.createElement("input")
+	cgpa_res.setAttribute("type","number")
+	cgpa_res.setAttribute("disabled","disabled")
+	cgpa_res.setAttribute("id","cgpa")
+	cgpa_res.setAttribute("class","gpa")
+
+	divlas.appendChild(cgpa_res)
+	divlas.appendChild(cgpa)
+
+	main.appendChild(divlas)
+	body.appendChild(main)
+	footer = document.createElement("footer")
+	footer.appendChild(document.createTextNode("Crafted by"))
+	footer.appendChild(document.createElement("br"))
+	footer.appendChild(document.createTextNode("Hari Haran and Suryaa"))
+	body.appendChild(footer)
+	
+	open_sem(document.getElementsByClassName("tabuttons")[0])
+
+</py-script>	
+  </body>
+</html>
