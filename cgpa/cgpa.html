@@ -76,13 +76,13 @@
         'CY5253' :{'Title': 'Chemistry of Materials', 'Credits': '4', 'Semester': '2' },
         'HS5252' :{'Title': 'Technical Communication', 'Credits': '3', 'Semester': '2' },
         'MA5251' :{'Title': 'Transform Techniques and Partial Differential Equations', 'Credits': '4', 'Semester': '2' },
-        'XT5074' :{'Title': 'Open Source Systems', 'Credits': '3', 'Semester': '5' },
-        'XC5072' :{'Title': 'Unix Internals', 'Credits': '3', 'Semester': '5' },
-        'XT5078' :{'Title': 'Visualization Techniques', 'Credits': '3', 'Semester': '6' },
-        'XT5083' :{'Title': 'Information Retrieval Techniques', 'Credits': '3', 'Semester': '8' },
-        'E-1' :{'Title': 'Elective-2', 'Credits': '3', 'Semester': '9' },
-        'E-2' :{'Title': 'Elective-2', 'Credits': '3', 'Semester': '9' },
-        'OE-2' :{'Title': 'Open Elective', 'Credits': '3', 'Semester': '9' },
+        'Elective I' :{'Title': 'Elective 1', 'Credits': '3', 'Semester': '5' },
+        'Elective II' :{'Title': 'Elective 2', 'Credits': '3', 'Semester': '5' },
+        'Elective III' :{'Title': 'Elective 3', 'Credits': '3', 'Semester': '6' },
+        'Elective IV' :{'Title': 'Elective 4', 'Credits': '3', 'Semester': '8' },
+        'Elective V' :{'Title': 'Elective 5', 'Credits': '3', 'Semester': '9' },
+        'Elective VI' :{'Title': 'Elective 6', 'Credits': '3', 'Semester': '9' },
+        'OpenElective II' :{'Title': 'Open Elective 2', 'Credits': '3', 'Semester': '9' },
         'XC5151' :{'Title': 'Digital Systems', 'Credits': '4', 'Semester': '1' },
         'XC5152' :{'Title': 'Problem Solving and C Programming', 'Credits': '3', 'Semester': '1' },
         'XC5161' :{'Title': 'C Programming Laboratory', 'Credits': '2', 'Semester': '1' },
@@ -125,7 +125,7 @@
         'XC5601/XT5601' :{'Title': 'Principles of Compiler Design/Computer Graphics and Multimedia', 'Credits': '3', 'Semester': '6' },
         'XC5611/XT5611' :{'Title': 'Compiler Design Laboratory/Computer Graphics and Multimedia Laboratory', 'Credits': '2', 'Semester': '6' },
         'XC5612/XT5612' :{'Title': 'Mini project', 'Credits': '2', 'Semester': '6' },
-        'XM5892':{'Title': 'Professional Photography', 'Credits': '3', 'Semester': '8' }
+        'OpenElective I':{'Title': 'Open Elective 1 ', 'Credits': '3', 'Semester': '8' }
         }
 
 	def open_sem(self):
@@ -252,7 +252,7 @@
 		cgpa_res = document.getElementById("cgpa")
 		cgpa_res.value = round(cgpa, 2)
 
-	till = 8
+	till = 11
 	body = document.body
 	global gpa 
 	gpa = [0]*till
@@ -301,7 +301,7 @@
 	body.appendChild(footer)
 	
 	open_sem(document.getElementsByClassName("tabuttons")[0])
-
+	window.alert("CGPA will be calculated only for the GPA values calculated already")
 </py-script>	
   </body>
 </html>
