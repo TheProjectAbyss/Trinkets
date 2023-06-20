@@ -11,7 +11,7 @@
   </head>
   <body>
 	  <header>
-		  <h1><a href="../index.html">The Project Abyss</a></h1>
+		  <h1><a href="../index.html">The Project Abyss' Trinkets</a></h1>
 	  </header>
 	  <nav>
 		  <div>
@@ -293,7 +293,9 @@
 	main.appendChild(divlas)
 	body.appendChild(main)
 	footer = document.createElement("footer")
-	footer.appendChild(document.createTextNode(str(datetime.date.today().strftime("%Y"))))
+	footer.appendChild(document.createTextNode("Crafted by"))
+	footer.appendChild(document.createElement("br"))
+	footer.appendChild(document.createTextNode("Hari Haran and Suryaa"))
 	body.appendChild(footer)
 	
 	open_sem(document.getElementsByClassName("tabuttons")[0])
