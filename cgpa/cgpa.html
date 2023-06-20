@@ -141,7 +141,9 @@
 		tabuttons = document.getElementsByClassName("tabuttons")
 		for i in tabuttons:
 			i.className = i.className.replace(" active", "")
+
 		document.getElementById('div'+str(sem)).style.display = "block"
+		document.getElementById('div'+str(sem)).style.overflowX = "scroll"
 
 		try:
 			self.currentTarget.className += " active"
