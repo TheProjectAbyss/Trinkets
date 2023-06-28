@@ -218,7 +218,9 @@
 			str = str[:src_sem]
 		elif option_id.startswith('courses'):
 			str = ['please select a course']
-			str += get_courses(option_id[7:])
+			courses = get_courses(option_id[7:])	
+			for i in courses:
+				str.append(data[i].get('Title'))
 
 		select.length = 0
 		for i in str:
