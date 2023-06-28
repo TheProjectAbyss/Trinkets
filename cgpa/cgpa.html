@@ -169,7 +169,7 @@
 		src_sem = self.currentTarget.id[9:]
 		course_select = document.getElementById('clearedCourse'+str(src_sem))
 		tb = document.getElementById('sem'+str(src_sem))
-		if course_select.value == 'please select a course' or course_select.value == '':
+		if course_select.value == '':
 			window.alert("Please select a valid course")
 			return 
 		add_row(course_select.value, tb, src_sem = src_sem)
@@ -190,9 +190,6 @@
 		for i in range(1, table.rows.length):
 			codes.append(table.rows[i].cells[1].innerHTML)
 			grade = table.rows[i].cells[3].children[0].value
-			if grade == 'choose grade':
-				window.alert('Select a valid grade')
-				return
 			grades.append(grade)
 		gpa = calculate_gpa(grades_to_points(grades), codes)
 		result = document.getElementById("gpa"+sem_no)
@@ -218,17 +215,17 @@
 			str = str[:src_sem]
 		elif option_id.startswith('courses'):
 			str = ['please select a course']
-			courses = get_courses(option_id[7:])	
-			for i in courses:
-				str.append(data[i].get('Title'))
-
+			str += get_courses(option_id[7:])	
 		select.length = 0
+
 		for i in str:
 			option = document.createElement("option")
-			if i == 0: 
-				option.setAttribute("disabled", disabled)
-				option.setAttribute("selected", selected)
 			option.setAttribute("value", i)
+			if str.index(i) == 0: 
+				option.setAttribute("disabled", "disabled")
+				option.setAttribute("selected", "selected")
+			elif option_id.startswith('courses'):
+				i = data[i].get('Title')
 			text = document.createTextNode(i)
 			option.appendChild(text)
 			select.appendChild(option)
