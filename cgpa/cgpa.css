@@ -15,7 +15,6 @@
 button {
   background-color: #222;
   color: white;
-  float: left;
   border: 0.5px solid black;
   outline: none;
   cursor: pointer;
@@ -57,6 +56,31 @@ input.gpa {
 select {
   background-color : #333;
   color: white;
+}
+
+.clearedSem, .clearedCourse {
+  width: 45%;
+  padding: 5px;
+  margin: 5px;
+}
+.clearedCourse{
+  margin-right: 0px;
+}
+.addCourseButton{
+  margin-top: 5px;
+  font-size: 22px;
+}
+.courseDiv{
+  clear: both;
+}
+.resetDiv, .gpaDiv{
+	padding: 5px;
+}
+.resetDiv{
+	float: left;
+}
+.gpaDiv{
+	float: right;
 }
 
 table {

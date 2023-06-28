@@ -129,7 +129,7 @@
         'XC5612/XT5612' :{'Title': 'Mini project', 'Credits': '2', 'Semester': '6' },
         'OpenElective I':{'Title': 'Open Elective 1 ', 'Credits': '3', 'Semester': '8' }
         }
-
+	#method to change tabs/semesters
 	def open_sem(self):
 		try:
 			sem=self.id[5:]
@@ -151,10 +151,74 @@
 			self.currentTarget.className += " active"
 		except:
 			self.className += " active"
-	
 
-	def add_grades(select):
-		str= ["choose grade", "O", "A+", "A", "B+", "B", "RA"]
+	#method to show the RA course of a semester
+	def add_sem(self):
+		src_sem = self.currentTarget.id[10:]
+		sem_select = document.getElementById('clearedSem'+str(src_sem))
+		target_sem = sem_select.value[9:]
+
+		course_select = document.getElementById('clearedCourse'+str(src_sem))
+		course_select = add_options(course_select, 'courses'+str(target_sem))
+		course_select.setAttribute('id', 'clearedCourse'+str(src_sem))
+
+	#method to add course to the semester that the arrear was cleared on
+	def add_course(self):
+		src_sem = self.currentTarget.id[9:]
+		course_select = document.getElementById('clearedCourse'+str(src_sem))
+		tb = document.getElementById('sem'+str(src_sem))
+		if course_select.value == 'please select a course' or course_select.value == '':
+			window.alert("Please select a valid course")
+			return 
+		add_row(course_select.value, tb, src_sem = src_sem)
+
+	
+	#method to remove added course
+	def remove_course(self):
+		rows = document.getElementsByClassName('addedCourse'+self.currentTarget.id[11:])
+		for i in range(0, len(rows)):
+			rows[0].parentNode.removeChild(rows[0])
+
+	#proxy method to get gpa
+	def get_gpa(self):
+		sem_no=self.currentTarget.id[6:]
+		table = document.getElementById('sem'+sem_no)
+		grades = []
+		codes = []
+		for i in range(1, table.rows.length):
+			codes.append(table.rows[i].cells[1].innerHTML)
+			grade = table.rows[i].cells[3].children[0].value
+			if grade == 'choose grade':
+				window.alert('Select a valid grade')
+				return
+			grades.append(grade)
+		gpa = calculate_gpa(grades_to_points(grades), codes)
+		result = document.getElementById("gpa"+sem_no)
+		result.setAttribute('title','rounded off to five decimal points only for display')
+		result.value = round(gpa , 5)
+	
+	#proxy method to get cgpa
+	def get_cgpa(self):
+		cgpa = calculate_cgpa()
+		if cgpa == 0:
+			window.alert("Calculate atleast one gpa first")
+		cgpa_res = document.getElementById("cgpa")
+		cgpa_res.value = round(cgpa, 5)
+
+	#to add options to select element dynamically
+	def add_options(select, option_id):
+		if option_id == 'grades':
+			str = ["choose grade", "O", "A+", "A", "B+", "B", "RA"]
+		elif option_id.startswith('semesters'):
+			str = ["choose arrear subject's semester", 'Semester 1', 'Semester 2', 'Semester 3', 'Semester 4', 'Semester 5',
+				  'Semester 6', 'Semester 7', 'Semester 8', 'Semester 9', 'Semester 10']
+			src_sem = int(option_id[9:])
+			str = str[:src_sem]
+		elif option_id.startswith('courses'):
+			str = ['please select a course']
+			str += get_courses(option_id[7:])
+
+		select.length = 0
 		for i in str:
 			option = document.createElement("option")
 			if i == 0: 
@@ -166,27 +230,40 @@
 			select.appendChild(option)
 
 		return select
+
+	def add_row(course, table, **kwargs):
+		tr = table.insertRow()
+		if kwargs.get('src_sem', False):
+			src_sem= str(kwargs['src_sem'])
+			tr.setAttribute('class', 'addedCourse'+str(src_sem))
 		
+		title = tr.insertCell()
+		title.appendChild(document.createTextNode(data[course].get('Title')))
+
+		code = tr.insertCell()
+		code.appendChild(document.createTextNode(course))
+
+		cred = tr.insertCell()
+		cred.appendChild(document.createTextNode(data[course].get('Credits')))
+
+		select = document.createElement('select')
+		select = add_options(select, 'grades')
+
+		td_in=tr.insertCell()
+		td_in.appendChild(select)
+		return
+
+
 
 	def create_sem_table(sem):
+		#create div for table and add gpa button
 		div=document.createElement('DIV')
 		div.setAttribute('class','tab')
 		div.setAttribute('id','div'+str(sem))
-
-		sub = document.createElement("BUTTON")
-		sub.appendChild(document.createTextNode("Calculate GPA"))
-		sub.setAttribute('id', 'button'+str(sem))
-		sub.setAttribute('class', 'calcButton')
-		sub.addEventListener("click", gpa_proxy)
-
-		result=document.createElement("input")
-		result.setAttribute("type","number")
-		result.setAttribute("disabled","disabled")
-		result.setAttribute("class","gpa")
-		result.setAttribute("id","gpa"+str(sem))
+		
 
 
-
+		#add semester table
 		tb=document.createElement('table')
 		tb.setAttribute('id','sem'+str(sem))
 
@@ -209,59 +286,86 @@
 
 		courses=get_courses(sem)
 		for i in courses:
-			tr = tb.insertRow()
-			title = tr.insertCell()
-			title.appendChild(document.createTextNode(data[i].get('Title')))
-
-			code = tr.insertCell()
-			code.appendChild(document.createTextNode(i))
-
-			cred = tr.insertCell()
-			cred.appendChild(document.createTextNode(data[i].get('Credits')))
-
-			select = document.createElement('select')
-			select = add_grades(select)
-
-			td_in=tr.insertCell()
-			td_in.appendChild(select)
+			add_row(i, tb)
 
 		div.appendChild(tb)
-		div.appendChild(result)
-		div.appendChild(sub)
+
+		below_table = document.createElement('DIV')
+		below_table.setAttribute('class', 'belowTab')
+		gpa_div = document.createElement('DIV')
+		gpa_div.setAttribute('class', 'gpaDiv')
+		reset_div = document.createElement('DIV')
+		reset_div.setAttribute('class', 'resetDiv')
+
+		result=document.createElement("input")
+		result.setAttribute("type","number")
+		result.setAttribute("disabled","disabled")
+		result.setAttribute("class","gpa")
+		result.setAttribute("id","gpa"+str(sem))
+
+		sub = document.createElement("BUTTON")
+		sub.appendChild(document.createTextNode("Calculate GPA"))
+		sub.setAttribute('id', 'button'+str(sem))
+		sub.setAttribute('class', 'calcButton')
+		sub.addEventListener("click", gpa_proxy)
+
+
+		gpa_div.appendChild(result)
+		gpa_div.appendChild(sub)
+		below_table.appendChild(gpa_div)
+
+		#add new course row
+		if sem != 1:
+			remove_button = document.createElement("BUTTON")
+			remove_button.appendChild(document.createTextNode("Reset Table"))
+			remove_button.setAttribute('id', 'resetButton'+str(sem))
+			remove_button.setAttribute('class', 'resetButton')
+			remove_button.addEventListener("click", remove_proxy)
+
+			reset_div.appendChild(remove_button)
+			below_table.appendChild(reset_div)
+
+			course_div = document.createElement('div')
+			course_div.setAttribute('class', 'courseDiv')
+
+			sem_select = document.createElement('select')
+			sem_select = add_options(sem_select, 'semesters'+str(sem))
+			sem_select.setAttribute('id', 'clearedSem'+str(sem))
+			sem_select.setAttribute('class', 'clearedSem')
+			sem_select.addEventListener('change', sem_proxy)
+			course_div.append(sem_select)
+
+			course_select = document.createElement('select')
+			course_select.setAttribute('id','clearedCourse'+str(sem))
+			course_select.setAttribute('class','clearedCourse')
+			course_div.append(course_select)
+
+			course_button = document.createElement("BUTTON")
+			course_button.appendChild(document.createTextNode("+"))
+			course_button.setAttribute('id', 'addCourse'+str(sem))
+			course_button.setAttribute('class', 'addCourseButton')
+			course_button.addEventListener("click", course_proxy)
+			course_div.append(course_button)
+			div.appendChild(course_div)
+		
+		div.appendChild(below_table)
 
 		main.appendChild(div)
 
-	def get_gpa(self):
-		sem_no=self.currentTarget.id[6:]
-		table = document.getElementById('sem'+sem_no)
-		grades = []
-		codes = []
-		for i in range(1, table.rows.length):
-			codes.append(table.rows[i].cells[1].innerHTML)
-			grade = table.rows[i].cells[3].children[0].value
-			if grade == 'choose grade':
-				window.alert('Select a valid grade')
-				return
-			grades.append(grade)
-		gpa = calculate_gpa(grades_to_points(grades), codes)
-		result = document.getElementById("gpa"+sem_no)
-		result.setAttribute('title','rounded off to five decimal points only for display')
-		result.value = round(gpa , 5)
-	
-	def get_cgpa(self):
-		cgpa = calculate_cgpa()
-		if cgpa == 0:
-			window.alert("Calculate atleast one gpa first")
-		cgpa_res = document.getElementById("cgpa")
-		cgpa_res.value = round(cgpa, 5)
 
 	till = 11
 	body = document.body
 	global grade_credits
+
 	grade_credits = [0]*till
+
+	#proxy methods for dynamic DOM nature
 	tab_proxy = create_proxy(open_sem)
 	cgpa_proxy = create_proxy(get_cgpa)
 	gpa_proxy = create_proxy(get_gpa)
+	sem_proxy = create_proxy(add_sem)
+	course_proxy = create_proxy(add_course)
+	remove_proxy = create_proxy(remove_course)
 
 	main = document.createElement('main')
 	div = document.createElement('DIV')
